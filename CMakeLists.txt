@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+set(DEVICE "bornhack-2024")
+
 if(DEVICE STREQUAL "")
 	set(DEVICE "$ENV{TARGET}")
 endif()

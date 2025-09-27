@@ -13,7 +13,7 @@
 #define LED_COUNT 16
 
 // Brightness multiplier.
-float brightness = 1;
+float brightness = 0.1;
 
 // A static buffer to put LED data into.
 static uint8_t led_data[3 * LED_COUNT];
@@ -48,7 +48,29 @@ static void effect_hue_single(float coeff) {
 }
 
 // A knight rider like effect.
-static void effect_knight_rider(float coeff) {
+static void effect_knight_rider_red(float coeff) {
+    coeff     = fmodf(coeff, 1);
+    float pos = coeff < 0.5 ? coeff * 2 : 2 - coeff * 2;
+    for (size_t i = 0; i < LED_COUNT; i++) {
+        float dist = pos - i / (float)(LED_COUNT - 1);
+        float a    = fmaxf(0, 1 - 4.5 * dist * dist);
+        set_led(i, f_rgb(a, 0, 0));
+    }
+    update_leds();
+}
+
+static void effect_knight_rider_green(float coeff) {
+    coeff     = fmodf(coeff, 1);
+    float pos = coeff < 0.5 ? coeff * 2 : 2 - coeff * 2;
+    for (size_t i = 0; i < LED_COUNT; i++) {
+        float dist = pos - i / (float)(LED_COUNT - 1);
+        float a    = fmaxf(0, 1 - 4.5 * dist * dist);
+        set_led(i, f_rgb(0, a * 0.8, 0));
+    }
+    update_leds();
+}
+
+static void effect_knight_rider_blue(float coeff) {
     coeff     = fmodf(coeff, 1);
     float pos = coeff < 0.5 ? coeff * 2 : 2 - coeff * 2;
     for (size_t i = 0; i < LED_COUNT; i++) {
@@ -56,6 +78,16 @@ static void effect_knight_rider(float coeff) {
         float a    = fmaxf(0, 1 - 4.5 * dist * dist);
         set_led(i, f_rgb(0, a * 0.8, a));
     }
+    update_leds();
+}
+
+static void effect_one_led(float coeff) {
+    coeff     = fmodf(coeff, 1);
+    float pos = floorf(coeff * 16);
+    for (size_t i = 0; i < LED_COUNT; i++) {
+        set_led(i, f_rgb(0, 0, 0));
+    }
+    set_led(pos, f_rgb(1, 1, 1));
     update_leds();
 }
 
@@ -114,7 +146,10 @@ static void effect_flags(float coeff) {
 effect_t const effects[] = {
     effect_hue_spectrum,
     effect_hue_single,
-    effect_knight_rider,
+    effect_knight_rider_red,
+    effect_knight_rider_green,
+    effect_knight_rider_blue,
+    effect_one_led,
     effect_flags,
 };
 
